@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+
+    <bean id = "ordinaryDepositor"
+          class="org.example.OrdinaryDepositor">
+
+    </bean>
+
+
+
+    <bean id = "ordinaryAccount"
+          class="org.example.OrdinaryAccount">
+        <property name="id" value="0001"/>
+        <property name="ordinaryDepositor" ref="ordinaryDepositor"/>
+        <property name="password" value="1234"/>
+
+    </bean>
+
+
+    <bean id = "vipDepositor"
+          class="org.example.VIPDepositor">
+
+    </bean>
+
+    <bean id = "vipAccount"
+          class="org.example.VipAccount">
+        <property name="id" value="0001"/>
+        <property name="vipDepositor" ref="vipDepositor"/>
+        <property name="password" value="4321"/>
+
+    </bean>
+
+
+
+
+
+
+
+
+
+
+
+</beans>
