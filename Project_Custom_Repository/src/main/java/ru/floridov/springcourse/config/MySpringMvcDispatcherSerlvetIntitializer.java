@@ -14,17 +14,17 @@ public class MySpringMvcDispatcherSerlvetIntitializer extends AbstractAnnotation
     @Override
     protected Class<?>[] getRootConfigClasses() {
         return null;
-    }
+    } // классы, общие для всех сервлетов (если их несколько)
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
         return new Class[]{SpringConfig.class};
-    }
+    } //возвращает наш конфиг (в данном случае единственный)
 
     @Override
     protected String[] getServletMappings() {
         return new String[]{"/"};
-    }
+    } // задает шаблон запросов
 
     @Override
     public void onStartup(ServletContext aServletContext) throws ServletException {

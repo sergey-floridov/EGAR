@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Show</title>
+</head>
+<body>
+<p th:text="${credit.getCurrentAccount() + ', ' + credit.getType() + ', '+ credit.getAmount() + ', '+ credit.getCurrency() + ', ' + credit.getClient()+ ', ' + credit.getLoanPeriodInMonth()}">VALUE</p>
+
+<div th:if="${client}">
+    <span>Кредит взял: </span> <span th:text="${client.getLastName()+ ' на срок: ' + credit.getLoanPeriodInMonth()+ ' месяцев '}">Client LastName</span>
+
+    <form th:method="PATCH" th:action="@{/credits/{id}/release(id=${credit.getId()})}">
+        <input type="submit" value="Обнулить кредит"/>
+    </form>
+</div>
+
+<div th:if="${clients}">
+    <span>Кто берет данный кредит?</span>
+    <form th:method="PATCH" th:action="@{/credits/{id}/assign(id=${credit.getId()})}">
+        <label for="client">Выберите клиента</label>
+        <select th:object="${client}" th:field="*{id}" id="client">
+            <option th:each="client : ${clients}" th:value="${client.getId()}" th:text="${client.getLastName()}">
+            </option>
+        </select>
+        <input type="submit" value="Оформить кредит на клиента"/>
+    </form>
+</div>
+
+<hr/>
+
+<form th:method="GET" th:action="@{/credits/{id}/edit(id=${credit.getId()})}">
+    <input type="submit" value="Редактировать"/>
+</form>
+
+<form th:method="DELETE" th:action="@{/credits/{id}(id=${credit.getId()})}">
+    <input type="submit" value="Удалить"/>
+</form>
+
+
+
+<li><a th:href="@{/credits/}">К списку кредитов</a></li>
+
+
+
+</body>
+</html>

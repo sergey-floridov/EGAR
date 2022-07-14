@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update credit</title>
+</head>
+<body>
+
+<form th:method="PATCH" th:action="@{/credits/{id}(id=${credit.getId()})}" th:object="${credit}">
+    <label for="currentAccount">Введите номер счета (10 цифр): </label>
+    <input type="number" th:field="*{currentAccount}" id="currentAccount"/>
+    <div style="color:red" th:if="${#fields.hasErrors('currentAccount')}" th:errors="*{currentAccount}">CurrentAccount Error</div>
+    <br/>
+    <label for="type">Введите тип кредитного продукта: </label>
+    <input type="text" th:field="*{type}" id="type"/>
+    <div style="color:red" th:if="${#fields.hasErrors('type')}" th:errors="*{type}">Type Error</div>
+    <br/>
+    <label for="amount">Введите сумму кредита: </label>
+    <input type="number" th:field="*{amount}" id="amount"/>
+    <div style="color:red" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Amount Error</div>
+    <br/>
+    <label for="currency">Введите валюту кредита: </label>
+    <input type="text" th:field="*{currency}" id="currency"/>
+    <div style="color:red" th:if="${#fields.hasErrors('currency')}" th:errors="*{currency}">Currency Error</div>
+    <br/>
+    <label for="rate">Введите процентную ставку: </label>
+    <input type="number" th:field="*{rate}" id="rate"/>
+    <div style="color:red" th:if="${#fields.hasErrors('rate')}" th:errors="*{rate}">Rate Error</div>
+    <br/>
+    <label for="insurance">Введите страховку: </label>
+    <input type="text" th:field="*{insurance}" id="insurance"/>
+    <div style="color:red" th:if="${#fields.hasErrors('insurance')}" th:errors="*{insurance}">Insurance Error</div>
+    <br/>
+    <label for="loanPeriodInMonth">Введите срок кредита в месяцах: </label>
+    <input type="number" th:field="*{loanPeriodInMonth}" id="loanPeriodInMonth"/>
+    <div style="color:red" th:if="${#fields.hasErrors('loanPeriodInMonth')}" th:errors="*{loanPeriodInMonth}">loanPeriodInMonth Error</div>
+    <br/>
+    <input type="submit" value="Редактировать!"/>
+</form>
+
+
+
+</body>
+</html>

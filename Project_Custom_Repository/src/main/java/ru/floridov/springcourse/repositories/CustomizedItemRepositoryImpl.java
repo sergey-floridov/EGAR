@@ -16,7 +16,7 @@ public class CustomizedItemRepositoryImpl implements CustomizedItemRepository {
     @Transactional
     @Override
     public List getItemsStartsWithB() {
-        return em.createQuery(" SELECT * from Item WHERE item_name LIKE B%", Item.class)
+        return em.createQuery(" SELECT * from item WHERE item_name LIKE B%", Item.class)
                 .getResultList();
     }
 }

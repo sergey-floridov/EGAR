@@ -10,10 +10,10 @@ import ru.floridov.springcourse.services.PeopleService;
 
 import javax.validation.Valid;
 
+
 @Controller
 @RequestMapping("/people")
 public class PeopleController {
-
     private final PeopleService peopleService;
 
     @Autowired

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New credit</title>
+</head>
+<body>
+
+<form th:method="POST" th:action="@{/credits}" th:object="${credit}">
+    <li><a th:href="@{/credits/}">К списку кредитов</a></li>
+    <label for="currentAccount">Введите номер счета (10 цифр): </label>
+    <input type="number" th:field="*{currentAccount}" id="currentAccount"/>
+    <div style="color:red" th:if="${#fields.hasErrors('currentAccount')}" th:errors="*{currentAccount}">CurrentAccount Error</div>
+    <br/>
+    <span>Тип кредита</span>
+    <select name = "type">
+        <option th:each="type : ${T(ru.pnz.floridov.RestDemo.util.Type).values()}" th:value="${type}" th:text="${type}">
+        </option>
+    </select>
+    <br/>
+    <label for="amount">Введите сумму кредита: </label>
+    <input type="number" th:field="*{amount}" id="amount"/>
+    <div style="color:red" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Amount Error</div>
+    <br/>
+    <span>Валюта кредита</span>
+    <select name = "currency">
+        <option th:each="currency : ${T(ru.pnz.floridov.RestDemo.util.Currency).values()}" th:value="${currency}" th:text="${currency}">
+        </option>
+    </select>
+    <br/>
+    <label for="rate">Введите процентную ставку: </label>
+    <input type="number" th:field="*{rate}" id="rate"/>
+    <div style="color:red" th:if="${#fields.hasErrors('rate')}" th:errors="*{rate}">Rate Error</div>
+    <br/>
+    <label for="insurance">Введите страховку: </label>
+    <input type="text" th:field="*{insurance}" id="insurance"/>
+    <div style="color:red" th:if="${#fields.hasErrors('insurance')}" th:errors="*{insurance}">Insurance Error</div>
+    <br/>
+    <label for="loanPeriodInMonth">Введите срок кредита в месяцах</label>
+    <input type="number" th:field="*{loanPeriodInMonth}" id="loanPeriodInMonth"/>
+    <div style="color:red" th:if="${#fields.hasErrors('loanPeriodInMonth')}" th:errors="*{loanPeriodInMonth}">loanPeriodInMonth Error</div>
+    <br/>
+    <input type="submit" value="Создать!"/>
+</form>
+
+</body>
+</html>

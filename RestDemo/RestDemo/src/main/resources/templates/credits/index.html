@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+<body>
+<p>Please select an option</p>
+<ol>
+    <li><a  th:href="@{/clients/}">Перейти к списку клиентов</a></li>
+    <li><a  th:href="@{/credits/new/}">New credit</a></li>
+
+</ol>
+
+<div th:each="credit : ${credits}">
+    <a th:href="@{/credits/{id}(id=${credit.getId()})}"
+       th:text="${credit.getCurrency() + ', ' + credit.getInsurance() + ', '+ credit.getAmount() + ', ' + credit.getClient()}">credit</a>
+</div>
+
+<br/>
+<hr/>
+
+<a href="/credits/new">Добавить кредит</a>
+
+</body>
+</html>
