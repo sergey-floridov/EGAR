@@ -1,5 +1,6 @@
 package ru.pnz.floridov.RestDemo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,12 +23,12 @@ public class Client {
     private Long id;
 
 
-    @NotEmpty(message = "Имя не может быть пустым")
+
     @Size(min = 2, max = 100, message = "Имя должно быть от 2 до 100 символов длиной")
     @Column(name = "first_name")
     private String firstName;
 
-    @NotEmpty(message = "Фамилия не должна быть пустой")
+
     @Size(min = 2, max = 100, message = "Фамилия должна быть от 2 до 100 символов длиной")
     @Column(name = "last_name")
     private String lastName;
@@ -41,7 +42,7 @@ public class Client {
 
     @Column(name = "email")
     @Email
-    @NotEmpty(message = "Емэйл не должен быть пустым")
+//    @NotEmpty(message = "Емэйл не должен быть пустым")
     private String email;
 
 
@@ -50,12 +51,14 @@ public class Client {
     private Manager manager;
 
 
-    @OneToOne
-    @JoinColumn(name = "debet_account_id", referencedColumnName = "id")
-    private DebetAccount debetAccount;
+    @OneToMany(mappedBy = "client", fetch=FetchType.LAZY)
+    @ToString.Exclude
+    @JsonIgnore
+    private List<DebetAccount> debetAccounts;
 
     @OneToMany(mappedBy = "client", fetch=FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<CreditProduct> credits;
 
 }

@@ -6,4 +6,6 @@ import ru.pnz.floridov.RestDemo.model.Client;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client,Long> {
+   Client findClientByLastName(String lastName);
+
 }

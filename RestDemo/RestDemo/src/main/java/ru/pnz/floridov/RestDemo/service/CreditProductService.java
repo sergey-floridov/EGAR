@@ -4,13 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pnz.floridov.RestDemo.exception.creditProductException.CreditProductNotFoundException;
 import ru.pnz.floridov.RestDemo.model.Client;
 import ru.pnz.floridov.RestDemo.model.CreditProduct;
 import ru.pnz.floridov.RestDemo.repository.CreditProductRepository;
-import ru.pnz.floridov.RestDemo.util.Type;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +21,10 @@ import java.util.Optional;
 public class CreditProductService {
 
 
+
     private final CreditProductRepository creditProductRepository;
 
+//    private BigDecimal monthPay = getMonthPay();
 
     @Autowired
     public CreditProductService(CreditProductRepository creditProductRepository) {
@@ -42,22 +46,19 @@ public class CreditProductService {
 
     public CreditProduct findOne(Long id) {
         Optional<CreditProduct> foundCreditProduct = creditProductRepository.findById(id);
-        return foundCreditProduct.orElse(null);
+        return foundCreditProduct.orElseThrow(CreditProductNotFoundException::new);
     }
 
     @Transactional
     public void save(CreditProduct creditProduct) {
         creditProductRepository.save(creditProduct);
+//        BigDecimal loanBalance = creditProduct.getLoanBalance();   Заготовка для уменьшения суммы кредита
+//        loanBalance = creditProduct.getAmount();
     }
 
     @Transactional
     public void update(Long id, CreditProduct updatedCreditProduct) {
-        CreditProduct creditProductToBeUpdated = creditProductRepository.findById(id).get();
-
-        // добавляем по сути новый кредитный продукт (который не находится в Persistence context), поэтому нужен save()
         updatedCreditProduct.setId(id);
-        updatedCreditProduct.setClient(creditProductToBeUpdated.getClient()); // чтобы не терялась связь при обновлении
-
         creditProductRepository.save(updatedCreditProduct);
     }
 
@@ -78,7 +79,6 @@ public class CreditProductService {
 
 
 
-    // Освбождает книгу (этот метод вызывается, когда человек возвращает книгу в библиотеку)
     @Transactional
     public void release(Long id) {
         creditProductRepository.findById(id).ifPresent(
@@ -93,18 +93,47 @@ public class CreditProductService {
 
 
 
-//    Переделать (возможно в REST controller)  под дату оплаты кредита
-// Назначает кредит человеку
+
+//Набросок для расчета ежемесячного платежа
+//    формула расчета платежа x = amount * ((i*(i+1)'n)/ (((i+1)'n) - 1)   особо вникать не нужно, взято из справочных материалов
+//    при расчете формулы нужно учитывать особенности арифметических операций с BigDecimal (add, subtract, divide, multiply)
     @Transactional
-    public void assign(Long id, Client selectedClient) {
-       creditProductRepository.findById(id).ifPresent(
-                creditProduct -> {
-                    creditProduct.setClient(selectedClient);
-//                    creditProduct.setTakenAt(new Date()); // текущее время
-                }
-        );
+    public BigDecimal getMonthPay (Long id){
+        Optional<CreditProduct> foundCreditProduct = creditProductRepository.findById(id);
+        CreditProduct creditProduct = foundCreditProduct.orElseThrow(CreditProductNotFoundException::new);
+        BigDecimal monthProcent = (creditProduct.getRate()).divide(BigDecimal.valueOf(1200),6, RoundingMode.UP);   // рассчитываем месячную процентную ставку i
+        BigDecimal add1 = monthProcent.add(BigDecimal.valueOf(1));                                                      // промежуточная переменная расчета
+        BigDecimal pow1 = add1.pow(creditProduct.getLoanPeriodInMonth());                                               // промежуточная переменная расчета
+        BigDecimal multiply1 = monthProcent.multiply(pow1);                                                             // промежуточная переменная расчета
+        BigDecimal subtract1 = pow1.subtract(BigDecimal.valueOf(1));                                                    // промежуточная переменная расчета
+        BigDecimal divide1 = multiply1.divide(subtract1,6, RoundingMode.UP);                                      // промежуточная переменная расчета
+        BigDecimal monthPay = divide1.multiply(creditProduct.getAmount());      // ежемесячный платеж
+        return monthPay;
     }
 
+
+//    Расчет переплаты за кредит
+    @Transactional
+    public BigDecimal getOverPayment (Long id){
+        Optional<CreditProduct> foundCreditProduct = creditProductRepository.findById(id);
+        CreditProduct creditProduct = foundCreditProduct.orElseThrow(CreditProductNotFoundException::new);
+        BigDecimal totalPayment = CreditProductService.this.getMonthPay(id).multiply(BigDecimal.valueOf(creditProduct.getLoanPeriodInMonth()));
+        BigDecimal overPayment = totalPayment.subtract(creditProduct.getAmount());
+        return overPayment;
+    }
+
+
+//    Расчет суммы процентов за платежный период, списание суммы с основного долга (за вычетом начисленных процентов)
+
+//    доделать дату взятия платежа и последнего платежа
+    @Transactional
+    public BigDecimal payProcent (Long id){
+        Optional<CreditProduct> foundCreditProduct = creditProductRepository.findById(id);
+        CreditProduct creditProduct = foundCreditProduct.orElseThrow(CreditProductNotFoundException::new);
+        long betweenPays = ChronoUnit.DAYS.between(LocalDate.now(), creditProduct.getLastPaidAt());      // рассчитываем количество дней между платежами
+        BigDecimal procentPerPeriod = (creditProduct.getAmount().multiply(creditProduct.getRate().multiply(BigDecimal.valueOf(betweenPays)))).divide(BigDecimal.valueOf(36500));
+        return CreditProductService.this.getMonthPay(id).subtract(procentPerPeriod);
+    }
 
 }
 

@@ -1,17 +1,18 @@
 package ru.pnz.floridov.RestDemo.service;
 
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pnz.floridov.RestDemo.DTO.ClientBalanceDetail;
 import ru.pnz.floridov.RestDemo.model.Client;
 import ru.pnz.floridov.RestDemo.model.CreditProduct;
 import ru.pnz.floridov.RestDemo.repository.ClientRepository;
-import ru.pnz.floridov.RestDemo.util.ClientNotFoundException;
-import ru.pnz.floridov.RestDemo.util.Type;
+import ru.pnz.floridov.RestDemo.exception.clientException.ClientNotFoundException;
+import ru.pnz.floridov.RestDemo.repository.CreditProductRepository;
+import ru.pnz.floridov.RestDemo.repository.DebetAccountRepository;
 
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -19,21 +20,17 @@ import java.util.Optional;
 
 
 @Service
+@RequiredArgsConstructor
 public class ClientService {
     private final ClientRepository clientRepository;
+    private final DebetAccountRepository debetAccountRepository;
 
-    @Autowired
-    public ClientService(ClientRepository clientRepository) {
-        this.clientRepository = clientRepository;
-    }
-
-
+    private final CreditProductRepository creditProductRepository;
 
     public List<Client> findAll() {
 
         return clientRepository.findAll();
     }
-
 
 
     public Client findOne(Long id) {
@@ -42,7 +39,22 @@ public class ClientService {
     }
 
 
+    @Transactional
+    public ClientBalanceDetail getClientBalance(Long id) {
+        var debetDetails = debetAccountRepository.findAllDebetBalanceDetailsById(id);
+        var creditDetails = creditProductRepository.findAllCreditBalanceDetailsById(id);
 
+        return ClientBalanceDetail.builder()
+                .creditSum(creditDetails)
+                .debetSum(debetDetails)
+                .total(debetDetails.subtract(creditDetails))
+                .build();
+    }
+
+    public List <Client> findByLastName(String lastName) {
+        Optional<Client> foundClient = Optional.ofNullable(clientRepository.findClientByLastName(lastName));
+        return Collections.singletonList(foundClient.orElse(null));
+    }
     @Transactional
     public void save(Client client) {clientRepository.save(client);
     }

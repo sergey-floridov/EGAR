@@ -1,44 +1,62 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Show</title>
-</head>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="parts/header :: head"></div>
+<!-- --------------------------------------------------------------- -->
 <body>
-<p th:text="${client.getLastName() + ', ' + client.getFirstName()}">VALUE</p>
+<header th:insert="parts/menu :: navbar"></header>
 
-<div th:if="${credits.isEmpty()}">
-    <p>Человек пока не взял ни одного кредита</p>
-    <hr/>
-</div>
+<h3 class="text-center lh-base p-4 mt-5">Подробная информация о клиенте</h3>
 
-<div th:if="${!credits.isEmpty()}">
-    <hr/>
-    <b>Кредитные продукты:</b>
-    <br/>
-    <table th:each="credit : ${credits}">
-        <tr>
-            <td>
-                <span th:text="${credit.getType() + ', ' + credit.getCurrentAccount() + ', ' + credit.getAmount()}"
-                   th:style="${credit.isExpired()} ? 'color: red' : 'color: black'">
-                    credit
+<div class="container">
+    <p><b>Фамилия: </b><span th:text="${client.getLastName()}"></span></p>
+    <p><b>Имя: </b><span th:text="${client.getFirstName()}"></span></p>
+    <p><b>Адрес: </b><span th:text="${client.getAddress()}"></span></p>
+    <p><b>Телефон: </b><span th:text="${client.getPhone()}"></span></p>
+    <p><b>Email: </b><span th:text="${client.getEmail()}"></span></p>
+    <p><b>Менеджер клиента: </b><span th:text="${client.getManager()}"></span></p>
+<!--    <p><b>Комментарий: </b><span th:text="${client.debetAccount.currentAccount}"></span></p>-->
+
+    <hr>
+
+    <div th:if="${credits.isEmpty()}">
+        <p>Человек пока не взял ни одного кредита</p>
+        <hr/>
+    </div>
+
+    <div th:if="${!credits.isEmpty()}">
+        <hr/>
+        <b>Кредитные продукты:</b>
+        <br/>
+        <table th:each="credit : ${credits}">
+            <tr>
+                <td>
+                <span th:text="${'Вид кредита: ' + credit.getCreditType() + ', ' + 'Номер счета: '  + credit.getCurrentAccount() + ', ' + 'Сумма кредита: '  + credit.getAmount()}">
                 </span>
-            </td>
-        </tr>
-    </table>
-    <hr/>
+                </td>
+            </tr>
+        </table>
+        <hr/>
+    </div>
+
+
+    <form th:method="GET" th:action="@{/clients/{id}/edit(id=${client.getId()})}">
+        <input type="submit" value="Редактировать"/>
+    </form>
+
+    <hr>
+    <form action="#" th:action="@{'/clients/delete/' + ${client.id}}" th:method="post">
+        <input type="submit" value="Удалить клиента"/>
+    </form>
+
+
+
 </div>
 
-<form th:method="GET" th:action="@{/clients/{id}/edit(id=${client.getId()})}">
-    <input type="submit" value="Редактировать"/>
-</form>
+</main>
 
-<form th:method="DELETE" th:action="@{/clients/{id}(id=${client.getId()})}">
-    <input type="submit" value="Удалить"/>
-</form>
-
-<li><a th:href="@{/clients/}">К списку клиентов</a></li>
-
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
+<!-- --------------------------------------------------------------- -->
+
 </html>

@@ -3,16 +3,15 @@ package ru.pnz.floridov.RestDemo.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.catalina.Manager;
 import ru.pnz.floridov.RestDemo.util.Currency;
-import ru.pnz.floridov.RestDemo.util.Type;
+import ru.pnz.floridov.RestDemo.util.CreditType;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -27,27 +26,27 @@ public class CreditProduct {
     @Column(name = "id", nullable = false)
     private Long id;
 
-//
-//    @Min(value = 10, message = "Введите 10 цифр")
-//    @Max(value = 10, message = "Введите 10 цифр")
-    @Column(name = "current_account")
-    private Integer currentAccount;
+
+    @Column(name = "current_account", unique = true)
+    private Long currentAccount;
 
     @Column(name = "type")
-    private Type type;
+    private CreditType creditType;
 
 
-//    @NotEmpty(message = "Поставьте срок кредита")
+
     @Min(2)
     @Max(300)
     @Column(name = "loan_period_in_month")
     private Integer loanPeriodInMonth;
 
-
     @Column(name = "amount")
     private BigDecimal amount;
 
+    private BigDecimal loanBalance;
+
     @Column(name = "currency")
+    @Enumerated(EnumType.STRING)
     private Currency currency;
 
     @Column(name = "rate")
@@ -60,7 +59,11 @@ public class CreditProduct {
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
 
-    private Date takenAt;
+
+    @Transient
+    private LocalDate takenAt;
+
+    private LocalDate lastPaidAt;
 
 
 
@@ -68,5 +71,6 @@ public class CreditProduct {
 
     @Transient
     private boolean expired; // Hibernate не будет замечать этого поля, что нам и нужно. По-умолчанию false
+
 
 }

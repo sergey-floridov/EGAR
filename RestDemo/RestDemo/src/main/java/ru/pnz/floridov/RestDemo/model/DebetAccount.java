@@ -1,9 +1,14 @@
 package ru.pnz.floridov.RestDemo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import ru.pnz.floridov.RestDemo.util.Currency;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 
 
@@ -21,25 +26,29 @@ public class DebetAccount {
 
 
     @Column(name = "current_account")
-    private Integer currentAccount;
+    private Long currentAccount;
 
 
     @Column(name = "amount")
     private BigDecimal amount;
 
     @Column(name = "currency")
-    private String currency;
+    private Currency currency;
 
     @Column(name = "rate")
     private BigDecimal rate;
 
 
-    @OneToOne
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @JsonIgnore
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
 
-    @OneToOne
-    @JoinColumn(name = "card_id",unique = true, referencedColumnName = "id")
+    @OneToOne(mappedBy = "debetAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore
     private Card card;
 
 

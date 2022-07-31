@@ -1,8 +1,10 @@
 package ru.pnz.floridov.RestDemo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -20,13 +22,15 @@ public class Card {
     private Long id;
 
     @Column(name = "cc_number")
-    private Integer ccNumber;
+    private Long ccNumber;
 
     @Column(name = "payment_system")
     private String paymentSystem;
 
-    @OneToOne(optional=false, mappedBy="card")
-    @JoinColumn(name = "debet_account_id", unique = true, referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @JsonIgnore
+    @JoinColumn(name = "debet_account_id", referencedColumnName = "id")
     private DebetAccount debetAccount;
 
 

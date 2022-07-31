@@ -9,7 +9,7 @@ import ru.pnz.floridov.RestDemo.model.Client;
 import ru.pnz.floridov.RestDemo.model.CreditProduct;
 import ru.pnz.floridov.RestDemo.service.ClientService;
 import ru.pnz.floridov.RestDemo.service.CreditProductService;
-import ru.pnz.floridov.RestDemo.util.Type;
+import ru.pnz.floridov.RestDemo.util.CreditType;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -31,7 +31,6 @@ public class CreditProductController {
     }
 
 
-
     @GetMapping()
     public String index(Model model, @RequestParam(value = "page", required = false) Integer page,
                         @RequestParam(value = "credits_per_page", required = false) Integer creditsPerPage) {
@@ -45,49 +44,40 @@ public class CreditProductController {
     }
 
 
-
+//    доделать DTO с данными по рассчету платежей
     @GetMapping("/{id}")
-    public String show(@PathVariable("id") Long id, Model model, @ModelAttribute("client")Client client) {
+    public String show(@PathVariable("id") Long id, Model model, @ModelAttribute("client") Client client) {
         model.addAttribute("credit", creditProductService.findOne(id));
-
-        Client clientOwner = creditProductService.getClient(id);
-
-        if (clientOwner != null)
-            model.addAttribute("client", clientOwner);
-        else
-            model.addAttribute("clients", clientService.findAll());
+        model.addAttribute("client", creditProductService.getClient(id));
+        model.addAttribute("pay", creditProductService.getMonthPay(id));
+        model.addAttribute("overPayment", creditProductService.getOverPayment(id));
         return "credits/show";
     }
 
 
-
     @GetMapping("/new")
-    public String newCredit(@ModelAttribute("credit")CreditProduct creditProduct) {
+    public String newCredit(Model model, @ModelAttribute("credit") @Valid CreditProduct creditProduct, @ModelAttribute("client")@Valid Client client) {
+        model.addAttribute("clients", clientService.findAll());
         return "credits/new";
     }
 
 
-
-    @PostMapping()
-    public String create( Model model, @ModelAttribute("credit") @Valid CreditProduct creditProduct,
+    @PostMapping("/new")
+    public String create(@ModelAttribute("credit") @Valid CreditProduct creditProduct,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors())
             return "credits/new";
-
-        List<Type> types = new ArrayList<Type>(Arrays.asList(Type.values()));
-        model.addAttribute("types", types);
         creditProductService.save(creditProduct);
         return "redirect:/credits";
     }
 
 
-
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") Long id) {
         model.addAttribute("credit", creditProductService.findOne(id));
+        model.addAttribute("clients", clientService.findAll());
         return "credits/edit";
     }
-
 
 
     @PatchMapping("/{id}")
@@ -101,30 +91,23 @@ public class CreditProductController {
     }
 
 
-
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") Long id) {
         creditProductService.delete(id);
         return "redirect:/credits";
     }
 
-
-//    оформление кредита на определенного человека
-    @PatchMapping("/{id}/assign")
-    public String assign(@PathVariable("id") Long id, @ModelAttribute("client") Client selectedClient) {
-        // У selectedClient назначено только поле id, остальные поля - null
-        creditProductService.assign(id, selectedClient);
-        return "redirect:/credits/" + id;
+    @PostMapping("/delete/{id}")                              // для BootStrap
+    public String deleteCreditProduct(@PathVariable Long id) {
+        creditProductService.delete(id);
+        return "redirect:/credits";
     }
-
 
 
 //    @GetMapping("/search")
 //    public String searchPage() {
 //        return "credits/search";
 //    }
-
-
 
 
 //    @PostMapping("/search")
@@ -139,7 +122,6 @@ public class CreditProductController {
         creditProductService.release(id);
         return "redirect:/credits/" + id;
     }
-
 
 
 }

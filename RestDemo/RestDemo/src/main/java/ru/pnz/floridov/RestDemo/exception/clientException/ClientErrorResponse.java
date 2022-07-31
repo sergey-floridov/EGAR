@@ -1,4 +1,4 @@
-package ru.pnz.floridov.RestDemo.util;
+package ru.pnz.floridov.RestDemo.exception.clientException;
 
 public class ClientErrorResponse {
     private String message;

@@ -1,16 +1,12 @@
 package ru.pnz.floridov.RestDemo.controller.mvcController;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.pnz.floridov.RestDemo.model.Client;
 import ru.pnz.floridov.RestDemo.service.ClientService;
-import ru.pnz.floridov.RestDemo.util.ClientErrorResponse;
-import ru.pnz.floridov.RestDemo.util.ClientNotFoundException;
 
 import javax.validation.Valid;
 
@@ -52,7 +48,7 @@ public class ClientController {
 
 
 
-    @PostMapping()
+    @PostMapping("/new")
     public String create(@ModelAttribute("client") @Valid Client client,
                          BindingResult bindingResult) {
 //        personValidator.validate(client, bindingResult);   //// доделать
@@ -88,12 +84,19 @@ public class ClientController {
         return "redirect:/clients";
     }
 
-    @ExceptionHandler
-    private ResponseEntity<ClientErrorResponse> HandleException (ClientNotFoundException e){
-        ClientErrorResponse response = new ClientErrorResponse(
-                "Client with this id wasn't found",
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);  //
+
+
+        @GetMapping("/search")
+    public String searchPage() {
+        return "clients/search";
     }
+
+
+    @PostMapping("/search")
+    public String makeSearch(Model model, @RequestParam("lastName") String lastName) {
+        model.addAttribute("client", clientService.findByLastName(lastName));
+
+        return "clients/search";
+    }
+
 }

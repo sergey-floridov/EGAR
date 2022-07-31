@@ -1,48 +1,43 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Show</title>
-</head>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="parts/header :: head"></div>
 <body>
-<p th:text="${credit.getCurrentAccount() + ', ' + credit.getType() + ', '+ credit.getAmount() + ', '+ credit.getCurrency() + ', ' + credit.getClient()+ ', ' + credit.getLoanPeriodInMonth()}">VALUE</p>
+<header th:insert="parts/menu :: navbar"></header>
 
-<div th:if="${client}">
-    <span>Кредит взял: </span> <span th:text="${client.getLastName()+ ' на срок: ' + credit.getLoanPeriodInMonth()+ ' месяцев '}">Client LastName</span>
 
-    <form th:method="PATCH" th:action="@{/credits/{id}/release(id=${credit.getId()})}">
-        <input type="submit" value="Обнулить кредит"/>
+
+<h3 class="text-center lh-base p-4 mt-5">Подробная информация о кредите</h3>
+
+<div class="container">
+    <p><b>УИН кредита: </b><span th:text="${credit.getId()}"></span></p>
+    <p><b>Номер кредитного счета: </b><span th:text="${credit.getCurrentAccount()}"></span></p>
+    <p><b>Тип кредита: </b><span th:text="${credit.getCreditType()}"></span></p>
+    <p><b>Срок кредита: </b><span th:text="${credit.getLoanPeriodInMonth()}"></span></p>
+    <p><b>Процентная ставка по кредиту: </b><span th:text="${credit.getRate()}"></span></p>
+    <p><b>Сумма кредита: </b><span th:text="${credit.getAmount()}"></span></p>
+    <p><b>Валюта кредита: </b><span th:text="${credit.getCurrency()}"></span></p>
+    <p><b>Страховка кредита: </b><span th:text="${credit.getInsurance()}"></span></p>
+    <p><b>На кого оформлен кредит: </b><span th:text="${credit.getClient().lastName}"></span></p>
+
+
+    <p><b>Ваш ежемесячный платеж составит: </b><span th:text="${pay.longValue()} + ' ' + ${credit.getCurrency()}"></span></p>
+    <p><b>Переплата за весь срок кредита составит: </b><span th:text="${overPayment.longValue()} + ' ' + ${credit.getCurrency()}"></span></p>
+
+    <hr>
+    <form action="#" th:action="@{'/credits/delete/' + ${credit.id}}" method="post">
+        <input type="submit" value="Удалить документ"/>
     </form>
+
+    <hr>
+    <form action="#" th:action="@{'/credits/' + ${credit.id} + '/edit'}" method="get">
+        <input type="submit" value="Редактировать документ"/>
+    </form>
+
 </div>
 
-<div th:if="${clients}">
-    <span>Кто берет данный кредит?</span>
-    <form th:method="PATCH" th:action="@{/credits/{id}/assign(id=${credit.getId()})}">
-        <label for="client">Выберите клиента</label>
-        <select th:object="${client}" th:field="*{id}" id="client">
-            <option th:each="client : ${clients}" th:value="${client.getId()}" th:text="${client.getLastName()}">
-            </option>
-        </select>
-        <input type="submit" value="Оформить кредит на клиента"/>
-    </form>
-</div>
+</main>
 
-<hr/>
-
-<form th:method="GET" th:action="@{/credits/{id}/edit(id=${credit.getId()})}">
-    <input type="submit" value="Редактировать"/>
-</form>
-
-<form th:method="DELETE" th:action="@{/credits/{id}(id=${credit.getId()})}">
-    <input type="submit" value="Удалить"/>
-</form>
-
-
-
-<li><a th:href="@{/credits/}">К списку кредитов</a></li>
-
-
-
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
