@@ -1,6 +1,7 @@
 package ru.pnz.floridov.RestDemo.controller.mvcController;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +21,7 @@ public class DebetAccountController {
     private final DebetAccountService debetAccountService;
     private final ClientService clientService;
 
+    @Autowired
     public DebetAccountController(DebetAccountService debetAccountService, ClientService clientService) {
         this.debetAccountService = debetAccountService;
         this.clientService = clientService;

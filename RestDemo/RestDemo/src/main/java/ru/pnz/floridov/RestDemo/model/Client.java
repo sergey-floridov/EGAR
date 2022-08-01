@@ -38,7 +38,7 @@ public class Client {
     private String address;
 
     @Column(name = "phone")
-    private int phone;
+    private String phone;
 
     @Column(name = "email")
     @Email

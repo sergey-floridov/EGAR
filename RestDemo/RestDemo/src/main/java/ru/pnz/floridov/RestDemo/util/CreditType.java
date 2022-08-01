@@ -1,14 +1,15 @@
 package ru.pnz.floridov.RestDemo.util;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
+@Getter
+@AllArgsConstructor
 public enum CreditType {
-    MORTGAGE ,
-    CAR_LOAN,
-    CONSUMER_CREDIT
 
-//    private final String description;
+    MORTGAGE,
+
+    CAR_LOAN,
+
+    CONSUMER_CREDIT
 
 }

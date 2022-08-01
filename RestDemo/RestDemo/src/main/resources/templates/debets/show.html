@@ -15,7 +15,7 @@
     <p><b>Сумма депозита: </b><span th:text="${debet.getAmount()}"></span></p>
     <p><b>Валюта депозита </b><span th:text="${debet.getCurrency()}"></span></p>
     <p><b>Процентная ставка по депозиту: </b><span th:text="${debet.getRate()}"></span></p>
-    <p><b>Владелец депозита: </b><span th:text="${debet.getClient().getLastName()}"></span></p>
+    <p><b>Владелец депозита: </b><span th:text="${debet.getClient()}"></span></p>
 
     <hr>
     <form action="#" th:action="@{'/debets/delete/' + ${debet.id}}" method="post">

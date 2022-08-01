@@ -1,12 +1,13 @@
 package ru.pnz.floridov.RestDemo.controller.restController;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import ru.pnz.floridov.RestDemo.DTO.ClientBalanceDetail;
 import ru.pnz.floridov.RestDemo.exception.clientException.ClientNotCreatedException;
 import ru.pnz.floridov.RestDemo.model.Client;
 import ru.pnz.floridov.RestDemo.service.ClientService;
@@ -18,22 +19,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/clients")
+@RequiredArgsConstructor
 public class ClientRestController {
 
     private final ClientService clientService;
-
-    @Autowired
-    public ClientRestController(ClientService clientService) {
-        this.clientService = clientService;
-    }
-
 
     @GetMapping()
     public List<Client> getClients() {
         return clientService.findAll(); // Jackson конвертирует эти объекты в JSON
     }
-
-
 
     @GetMapping("/{id}")
     public Client getClient(@PathVariable("id") Long id) {
@@ -59,6 +53,10 @@ public class ClientRestController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/balance")
+    public ResponseEntity<ClientBalanceDetail> getTotalBalance(@PathVariable(name = "id") Long userId) {
+        return ResponseEntity.ok(clientService.getClientBalance(userId));
+    }
 
 
     @ExceptionHandler

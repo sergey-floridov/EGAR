@@ -3,7 +3,9 @@ package ru.pnz.floridov.RestDemo.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import ru.pnz.floridov.RestDemo.util.Currency;
 
@@ -12,7 +14,8 @@ import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -33,16 +36,13 @@ public class DebetAccount {
     private BigDecimal amount;
 
     @Column(name = "currency")
+    @Enumerated(EnumType.STRING)
     private Currency currency;
 
     @Column(name = "rate")
     private BigDecimal rate;
 
-
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
 

@@ -10,8 +10,6 @@ import ru.pnz.floridov.RestDemo.exception.debetAccountException.DebetAccountNotF
 import ru.pnz.floridov.RestDemo.model.Client;
 import ru.pnz.floridov.RestDemo.model.DebetAccount;
 import ru.pnz.floridov.RestDemo.repository.DebetAccountRepository;
-
-import javax.persistence.Persistence;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,26 +62,4 @@ public class DebetAccountService {
         return debetAccountRepository.findById(id).map(DebetAccount::getClient).orElse(null);
     }
 
-
-    // Освбождает счет (этот метод вызывается, когда человек возвращает )
-    @Transactional
-    public void release(Long id) {
-        debetAccountRepository.findById(id).ifPresent(
-                debetAccount -> {
-                    debetAccount.setClient(null);
-
-                });
-    }
-
-
-    //    Переделать (возможно в REST controller)  под дату оплаты кредита
-// Назначает счет человеку
-    @Transactional
-    public void assign(Long id, Client selectedClient) {
-        debetAccountRepository.findById(id).ifPresent(
-                debetAccount -> {
-                    debetAccount.setClient(selectedClient);
-                }
-        );
-    }
 }

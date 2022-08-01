@@ -8,7 +8,6 @@ import ru.pnz.floridov.RestDemo.exception.creditProductException.CreditProductNo
 import ru.pnz.floridov.RestDemo.model.Client;
 import ru.pnz.floridov.RestDemo.model.CreditProduct;
 import ru.pnz.floridov.RestDemo.repository.CreditProductRepository;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -21,10 +20,8 @@ import java.util.Optional;
 public class CreditProductService {
 
 
-
     private final CreditProductRepository creditProductRepository;
 
-//    private BigDecimal monthPay = getMonthPay();
 
     @Autowired
     public CreditProductService(CreditProductRepository creditProductRepository) {
@@ -37,11 +34,9 @@ public class CreditProductService {
     }
 
 
-
     public List<CreditProduct> findWithPagination(Integer page, Integer creditProductPerPage) {
             return creditProductRepository.findAll(PageRequest.of(page, creditProductPerPage)).getContent();
     }
-
 
 
     public CreditProduct findOne(Long id) {
@@ -49,12 +44,12 @@ public class CreditProductService {
         return foundCreditProduct.orElseThrow(CreditProductNotFoundException::new);
     }
 
+
     @Transactional
     public void save(CreditProduct creditProduct) {
         creditProductRepository.save(creditProduct);
-//        BigDecimal loanBalance = creditProduct.getLoanBalance();   Заготовка для уменьшения суммы кредита
-//        loanBalance = creditProduct.getAmount();
     }
+
 
     @Transactional
     public void update(Long id, CreditProduct updatedCreditProduct) {
@@ -62,36 +57,17 @@ public class CreditProductService {
         creditProductRepository.save(updatedCreditProduct);
     }
 
+
     @Transactional
     public void delete(Long id) {
         creditProductRepository.deleteById(id);
     }
 
 
-
-
-
-    // Returns null if creditProduct has no client
     public Client getClient(Long id) {
         // Здесь Hibernate.initialize() не нужен, так как владелец (сторона One) загружается нелениво
         return creditProductRepository.findById(id).map(CreditProduct::getClient).orElse(null);
     }
-
-
-
-    @Transactional
-    public void release(Long id) {
-        creditProductRepository.findById(id).ifPresent(
-                creditProduct -> {
-                    creditProduct.setClient(null);
-                    creditProduct.setTakenAt(null);
-                });
-    }
-
-
-
-
-
 
 
 //Набросок для расчета ежемесячного платежа
@@ -120,19 +96,6 @@ public class CreditProductService {
         BigDecimal totalPayment = CreditProductService.this.getMonthPay(id).multiply(BigDecimal.valueOf(creditProduct.getLoanPeriodInMonth()));
         BigDecimal overPayment = totalPayment.subtract(creditProduct.getAmount());
         return overPayment;
-    }
-
-
-//    Расчет суммы процентов за платежный период, списание суммы с основного долга (за вычетом начисленных процентов)
-
-//    доделать дату взятия платежа и последнего платежа
-    @Transactional
-    public BigDecimal payProcent (Long id){
-        Optional<CreditProduct> foundCreditProduct = creditProductRepository.findById(id);
-        CreditProduct creditProduct = foundCreditProduct.orElseThrow(CreditProductNotFoundException::new);
-        long betweenPays = ChronoUnit.DAYS.between(LocalDate.now(), creditProduct.getLastPaidAt());      // рассчитываем количество дней между платежами
-        BigDecimal procentPerPeriod = (creditProduct.getAmount().multiply(creditProduct.getRate().multiply(BigDecimal.valueOf(betweenPays)))).divide(BigDecimal.valueOf(36500));
-        return CreditProductService.this.getMonthPay(id).subtract(procentPerPeriod);
     }
 
 }

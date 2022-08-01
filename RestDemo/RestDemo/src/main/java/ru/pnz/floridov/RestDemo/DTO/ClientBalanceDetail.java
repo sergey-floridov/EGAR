@@ -13,7 +13,15 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ClientBalanceDetail {
 
-    private BigDecimal debetSum;
-    private BigDecimal creditSum;
+    private BigDecimal rubDebetSum;
+    private BigDecimal usdDebetSum;
+    private BigDecimal euroDebetSum;
+    private BigDecimal rubCreditSum;
+    private BigDecimal usdCreditSum;
+    private BigDecimal euroCreditSum;
+
+    private BigDecimal totalDebet;
+    private BigDecimal totalCredit;
+
     private BigDecimal total;
 }

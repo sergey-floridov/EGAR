@@ -5,15 +5,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.pnz.floridov.RestDemo.model.Client;
 import ru.pnz.floridov.RestDemo.model.DebetAccount;
+import ru.pnz.floridov.RestDemo.util.Currency;
 
 import java.math.BigDecimal;
 
 @Repository
 public interface DebetAccountRepository extends JpaRepository<DebetAccount,Long> {
 
-    //@Query(value = "select sum (amount) as total from debet_account where client_id?1", nativeQuery = true)
-    @Query(value = "select (select sum (amount) as total from debet_account where client_id?1 AND currency = 'RUB'," +
-            "select sum (amount) as total from debet_account where client_id?1 AND currency = 'USD'" +
-            ")", nativeQuery = true)
-    BigDecimal findAllDebetBalanceDetailsById(Long id);
+    @Query(value = "select sum (amount) from debet_account where client_id=:id and currency=:currency", nativeQuery = true)
+    BigDecimal findAllDebetBalanceDetailsById(Long id, String currency);
 }
